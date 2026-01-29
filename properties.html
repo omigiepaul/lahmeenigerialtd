@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Lahmee Properties</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+body {
+  font-family: Arial;
+  background: #f4f4f4;
+  margin: 0;
+}
+
+/* NAV BAR */
+header {
+  background: #0b1220;
+  color: white;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header h2 {
+  margin: 0;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  margin-left: 20px;
+  font-weight: bold;
+}
+
+nav a:hover {
+  color: #22c55e;
+}
+
+/* PAGE CONTENT */
+main {
+  padding: 20px;
+}
+
+.property {
+  background: white;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+}
+
+.media {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+}
+
+.media img,
+.media video {
+  width: 250px;
+  border-radius: 8px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVIGATION BAR -->
+<header>
+  <h2>Lahmee</h2>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="properties.html">Properties</a>
+    <a href="tenancy.html">Tenant Form</a>
+    <a href="inquiry.html">Inquiry</a>
+  </nav>
+</header>
+
+<main>
+  <h1>Available Properties</h1>
+  <div id="properties"></div>
+</main>
+
+<script>
+const db = supabase.createClient(
+  "https://pbcoycolvfibjzejvbnr.supabase.co",
+  "sb_publishable_hvn5M7jTuIAWosscH-KAXw_uoYxI7kw"
+);
+
+async function loadProperties() {
+  const { data, error } = await db
+    .from("properties")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  const container = document.getElementById("properties");
+  container.innerHTML = "";
+
+  data.forEach(p => {
+    let mediaHTML = "";
+    let media = [];
+
+    // 🔥 THIS IS THE FIX
+    if (Array.isArray(p.media)) {
+      media = p.media;
+    } else if (typeof p.media === "string") {
+      try {
+        media = JSON.parse(p.media);
+      } catch {
+        media = [];
+      }
+    }
+
+    media.forEach(url => {
+      if (!url) return;
+
+      if (url.endsWith(".mp4") || url.includes("video")) {
+        mediaHTML += `
+          <video controls>
+            <source src="${url}">
+          </video>
+        `;
+      } else {
+        mediaHTML += `<img src="${url}" loading="lazy">`;
+      }
+    });
+
+    container.innerHTML += `
+      <div class="property">
+        <h3>${p.title}</h3>
+        <p>${p.location}</p>
+        <p>${p.description}</p>
+        <p><b>₦${p.price}</b></p>
+        <div class="media">${mediaHTML}</div>
+      </div>
+    `;
+  });
+}
+
+loadProperties();
+</script>

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lahmee Nigeria Limited | Estate Management</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- =======================
+       GLOBAL STYLES (CSS)
+  ======================== -->
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background: #f5f5f5;
+      color: #222;
+      line-height: 1.6;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      background: #0a0a0a;
+      color: white;
+      padding: 20px;
+    }
+
+    .header-container {
+      max-width: 1200px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo h1 {
+      font-size: 24px;
+      letter-spacing: 1px;
+    }
+
+    .logo span {
+      font-size: 12px;
+      display: block;
+      color: #ccc;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+      font-size: 15px;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    /* ===== HERO SECTION ===== */
+    .hero {
+      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+                  url('https://images.unsplash.com/photo-1560518883-ce09059eeffa');
+      background-size: cover;
+      background-position: center;
+      color: white;
+      padding: 100px 20px;
+      text-align: center;
+    }
+
+    .hero h2 {
+      font-size: 42px;
+      margin-bottom: 15px;
+    }
+
+    .hero p {
+      font-size: 18px;
+      max-width: 700px;
+      margin: auto;
+      margin-bottom: 30px;
+    }
+
+    .hero-buttons a {
+      display: inline-block;
+      padding: 14px 25px;
+      margin: 10px;
+      background: #000;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 4px;
+    }
+
+    .hero-buttons a.secondary {
+      background: #fff;
+      color: #000;
+    }
+
+    /* ===== ABOUT SECTION ===== */
+    .section {
+      padding: 60px 20px;
+      background: white;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .section h3 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .section p {
+      max-width: 900px;
+      margin: auto;
+      text-align: center;
+      font-size: 16px;
+      color: #444;
+    }
+
+    /* ===== SERVICES ===== */
+    .services {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 40px;
+    }
+
+    .service-box {
+      background: #fafafa;
+      padding: 25px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+
+    .service-box h4 {
+      margin-bottom: 10px;
+    }
+
+    /* ===== CONTACT STRIP ===== */
+    .contact-strip {
+      background: #000;
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    .contact-strip a {
+      color: #fff;
+      text-decoration: underline;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: #111;
+      color: #ccc;
+      padding: 30px 20px;
+      font-size: 14px;
+    }
+
+    footer .footer-container {
+      max-width: 1200px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    footer h4 {
+      color: white;
+      margin-bottom: 10px;
+    }
+
+    /* ===== WHATSAPP FLOAT ===== */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #25d366;
+      color: white;
+      padding: 15px 18px;
+      border-radius: 50%;
+      font-size: 22px;
+      text-decoration: none;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .hero h2 {
+        font-size: 30px;
+      }
+      nav {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- =======================
+     HEADER
+======================= -->
+<header>
+  <div class="header-container">
+    <div class="logo">
+      <h1>LAHMEE</h1>
+      <span>Nigeria Limited</span>
+    </div>
+
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="properties.html">Properties</a>
+      <a href="tenancy.html">Tenant Form</a>
+      <a href="inquiry.html">Inquiry</a>
+    </nav>
+  </div>
+</header>
+
+<!-- =======================
+     HERO SECTION
+======================= -->
+<section class="hero">
+  <h2>Trusted Estate Management & Property Services</h2>
+  <p>
+    Lahmee Nigeria Limited provides professional estate management,
+    property listings, and tenancy services across Nigeria.
+  </p>
+
+  <div class="hero-buttons">
+    <a href="properties.html">View Properties</a>
+    <a href="tenancy.html" class="secondary">Fill Tenant Form</a>
+  </div>
+</section>
+
+<!-- =======================
+     ABOUT SECTION
+======================= -->
+<section class="section">
+  <div class="container">
+    <h3>About Lahmee Nigeria Limited</h3>
+    <p>
+      Lahmee Nigeria Limited is an estate management and development company
+      committed to providing reliable property services, transparent tenancy
+      processes, and trusted client relationships. With offices in Abule Egba
+      and Ikeja, we serve individuals and families seeking secure accommodation.
+    </p>
+
+    <div class="services">
+      <div class="service-box">
+        <h4>Property Listings</h4>
+        <p>Browse available houses, flats, and apartments.</p>
+      </div>
+
+      <div class="service-box">
+        <h4>Tenant Processing</h4>
+        <p>Simple and transparent tenant application process.</p>
+      </div>
+
+      <div class="service-box">
+        <h4>Estate Management</h4>
+        <p>Professional management and development services.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =======================
+     CONTACT STRIP
+======================= -->
+<section class="contact-strip">
+  <p>
+    Have questions? Chat with us on WhatsApp or submit an inquiry.<br>
+    <a href="inquiry.html">Go to Inquiry Page</a>
+  </p>
+</section>
+
+<!-- =======================
+     FOOTER
+======================= -->
+<footer>
+  <div class="footer-container">
+    <div>
+      <h4>Lahmee Nigeria Limited</h4>
+      <p>Estate Management & Development</p>
+    </div>
+
+    <div>
+      <h4>Offices</h4>
+      <p>
+        Abule Egba: No 46b, Agbe Road<br>
+        Ikeja: No 2, Olufunmilola Okikiolu Street
+      </p>
+    </div>
+
+    <div>
+      <h4>Contact</h4>
+      <p>
+        Email: lahmeenigerialtd@gmail.com<br>
+        Phone: 08076558654
+      </p>
+    </div>
+  </div>
+</footer>
+
+<!-- =======================
+     WHATSAPP FLOAT BUTTON
+======================= -->
+<a class="whatsapp-float"
+   href="https://wa.me/2349094180952"
+   title="Chat on WhatsApp">
+  💬
+</a>
+
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Inquiry | Lahmee Nigeria Limited</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background:#f4f4f4;
+  margin:0;
+}
+
+header {
+  background:#000;
+  color:#fff;
+  padding:20px;
+}
+
+nav a {
+  color:#fff;
+  margin-right:15px;
+  text-decoration:none;
+  font-weight:bold;
+}
+
+.container {
+  max-width:800px;
+  margin:30px auto;
+  background:#fff;
+  padding:30px;
+  border-radius:8px;
+}
+
+label {
+  display:block;
+  margin-top:15px;
+  font-weight:bold;
+}
+
+input, textarea, select {
+  width:100%;
+  padding:10px;
+  margin-top:6px;
+  border-radius:5px;
+  border:1px solid #ccc;
+}
+
+textarea {
+  resize:vertical;
+  min-height:120px;
+}
+
+button {
+  margin-top:25px;
+  width:100%;
+  padding:15px;
+  background:#000;
+  color:#fff;
+  border:none;
+  font-size:16px;
+  cursor:pointer;
+}
+
+button:hover {
+  opacity:0.9;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h2>LAHMEE NIGERIA LIMITED</h2>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="properties.html">Properties</a>
+    <a href="tenancy.html">Tenant Form</a>
+    <a href="inquiry.html">Inquiry</a>
+  </nav>
+</header>
+
+<div class="container">
+  <h2>Send an Inquiry</h2>
+
+  <form id="inquiryForm">
+    <label>Full Name</label>
+    <input type="text" name="name" required>
+
+    <label>Phone Number</label>
+    <input type="tel" name="phone" required>
+
+    <label>Email Address</label>
+    <input type="email" name="email">
+
+    <label>Your Message</label>
+    <textarea name="message" required></textarea>
+
+    <label>Send Inquiry To</label>
+    <select name="destination" required>
+      <option value="">-- Select --</option>
+      <option value="whatsapp">WhatsApp</option>
+      <option value="email">Gmail</option>
+    </select>
+
+    <button type="submit">Send Inquiry</button>
+  </form>
+</div>
+
+<script>
+document.getElementById("inquiryForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const data = Object.fromEntries(new FormData(this).entries());
+
+  const textMessage =
+    `Hello Lahmee Nigeria Limited,%0A%0A` +
+    `Name: ${data.name}%0A` +
+    `Phone: ${data.phone}%0A` +
+    `Email: ${data.email || "N/A"}%0A%0A` +
+    `Inquiry:%0A${data.message}`;
+
+  if (data.destination === "whatsapp") {
+    window.open(
+      "https://wa.me/2349094180952?text=" + encodeURIComponent(textMessage),
+      "_blank"
+    );
+  }
+
+  if (data.destination === "email") {
+    window.location.href =
+      `mailto:lahmeenigerialtd@gmail.com?subject=New Inquiry from ${data.name}&body=` +
+      encodeURIComponent(textMessage);
+  }
+});
+</script>
+
+</body>
+</html>

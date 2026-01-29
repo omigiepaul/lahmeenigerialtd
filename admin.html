@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lahmee Admin Portal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0b1220;
+  color: #fff;
+}
+header {
+  background: #020617;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+nav button {
+  margin-left: 10px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  background: #22c55e;
+  font-weight: bold;
+  cursor: pointer;
+}
+section {
+  display: none;
+  padding: 30px;
+}
+section.active {
+  display: block;
+}
+input, textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  border: none;
+}
+button.primary {
+  width: 100%;
+  padding: 12px;
+  background: #22c55e;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.card {
+  background: #020617;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  border-left: 6px solid transparent;
+}
+.card.green { border-color: #22c55e; }
+.card.yellow { border-color: #eab308; }
+.card.red { border-color: #ef4444; }
+.card button {
+  background: red;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+.whatsapp {
+  display: inline-block;
+  margin-top: 8px;
+  color: #22c55e;
+  font-weight: bold;
+  text-decoration: none;
+}
+</style>
+</head>
+<body>
+<header id="topBar" style="display:none;">
+  <h2>Lahmee Admin</h2>
+  <nav>
+    <button id="navProperties">Properties</button>
+    <button id="navTenants">Tenants</button>
+    <button id="navLogout">Logout</button>
+  </nav>
+</header>
+<section id="loginSection" class="active">
+  <h2>Admin Login</h2>
+  <input id="loginEmail" placeholder="Email">
+  <input id="loginPassword" type="password">
+  <button class="primary" id="loginBtn">Login</button>
+</section>
+<section id="propertiesSection">
+  <h2>Add Property</h2>
+  <input id="pTitle" placeholder="Title">
+  <input id="pLocation" placeholder="Location">
+  <input id="pPrice" placeholder="Price">
+  <textarea id="pDesc" placeholder="Description"></textarea>
+  <input id="pMedia" type="file" multiple>
+  <button class="primary" id="addPropertyBtn">Add Property</button>
+  <h3>Properties</h3>
+  <div id="propertyList"></div>
+</section>
+<section id="tenantsSection">
+  <h2>Add Tenant</h2>
+  <input id="tName" placeholder="Name">
+  <input id="tPhone" placeholder="Phone">
+  <input id="tAddress" placeholder="Address">
+  <input id="tStart" type="date">
+  <input id="tEnd" type="date">
+  <textarea id="tDesc" placeholder="Description"></textarea>
+  <button class="primary" id="addTenantBtn">Add Tenant</button>
+  <h3>Search Tenants</h3>
+  <input id="tenantSearch" placeholder="Search by name or phone">
+  <h3>Tenants</h3>
+  <div id="tenantList"></div>
+</section>
+
+<script>
+const SUPABASE_URL = "https://pbcoycolvfibjzejvbnr.supabase.co";
+const SUPABASE_KEY = "sb_publishable_hvn5M7jTuIAWosscH-KAXw_uoYxI7kw";
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const CLOUD_NAME = "dot1mrb43";
+const UPLOAD_PRESET = "lahmee_upload";
+
+/* ---------- SAFETY ---------- */
+function safe(v) {
+  if (!v) return "";
+  return String(v)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+/* ---------- NAV ---------- */
+function show(section) {
+  document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
+  section.classList.add("active");
+}
+navProperties.onclick = () => show(propertiesSection);
+navTenants.onclick = () => show(tenantsSection);
+
+/* ---------- AUTH ---------- */
+loginBtn.onclick = async () => {
+  const { error } = await db.auth.signInWithPassword({
+    email: loginEmail.value,
+    password: loginPassword.value
+  });
+  if (error) return alert(error.message);
+  topBar.style.display = "flex";
+  show(propertiesSection);
+  loadProperties();
+  loadTenants();
+};
+
+navLogout.onclick = async () => {
+  await db.auth.signOut();
+  location.reload();
+};
+
+/* ---------- CLOUDINARY ---------- */
+async function uploadFile(file) {
+  const fd = new FormData();
+  fd.append("file", file);
+  fd.append("upload_preset", UPLOAD_PRESET);
+  const res = await fetch(
+    `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`,
+    { method: "POST", body: fd }
+  );
+  return (await res.json()).secure_url;
+}
+
+/* ──────────────────────────────────────────────
+   DELETE FUNCTIONS - MOVED UP SO THEY ARE DEFINED EARLY
+────────────────────────────────────────────── */
+async function deleteProperty(id) {
+  if (!confirm("Are you sure you want to delete this property?")) return;
+  const { error } = await db.from("properties").delete().eq("id", id);
+  if (error) {
+    alert("Failed to delete property: " + error.message);
+    return;
+  }
+  loadProperties();
+}
+
+async function deleteTenant(id) {
+  if (!confirm("Are you sure you want to delete this tenant?")) return;
+  const { error } = await db.from("tenants").delete().eq("id", id);
+  if (error) {
+    alert("Failed to delete tenant: " + error.message);
+    return;
+  }
+  loadTenants();
+}
+
+/* ---------- PROPERTIES ---------- */
+addPropertyBtn.onclick = async () => {
+  const urls = [];
+  for (const f of pMedia.files) {
+    try {
+      urls.push(await uploadFile(f));
+    } catch (e) {
+      console.error("Upload failed:", e);
+    }
+  }
+  await db.from("properties").insert([{
+    title: pTitle.value,
+    location: pLocation.value,
+    price: pPrice.value,
+    description: pDesc.value,
+    media: urls
+  }]);
+  pTitle.value = pLocation.value = pPrice.value = pDesc.value = "";
+  pMedia.value = "";
+  loadProperties();
+};
+
+async function loadProperties() {
+  const { data } = await db.from("properties").select("*").order("id", { ascending: false });
+  propertyList.innerHTML = "";
+  
+  if (!data || data.length === 0) {
+    propertyList.innerHTML = "<p>No properties found.</p>";
+    return;
+  }
+
+  data.forEach(p => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <b>${safe(p.title)}</b> - ₦${safe(p.price)}
+      <button class="delete-btn" data-id="${p.id}">Delete</button>
+    `;
+    propertyList.appendChild(card);
+  });
+
+  // Attach delete listeners
+  propertyList.querySelectorAll(".delete-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("data-id");
+      deleteProperty(id);
+    });
+  });
+}
+
+/* ---------- TENANTS ---------- */
+addTenantBtn.onclick = async () => {
+  const payload = {
+    name: tName.value,
+    phone: tPhone.value,
+    address: tAddress.value || null,
+    start_date: tStart.value || null,
+    end_date: tEnd.value || null,
+    description: tDesc.value || null
+  };
+  const { error } = await db.from("tenants").insert([payload]);
+  if (error) return alert(error.message);
+  
+  tName.value = tPhone.value = tAddress.value = tDesc.value = "";
+  tStart.value = tEnd.value = "";
+  loadTenants();
+};
+
+function expiryClass(endDate) {
+  if (!endDate) return "green";
+  const diff = (new Date(endDate) - new Date()) / 86400000;
+  if (diff <= 30) return "red";
+  if (diff <= 90) return "yellow";
+  return "green";
+}
+
+async function loadTenants() {
+  const search = tenantSearch.value.toLowerCase();
+  const { data } = await db.from("tenants").select("*");
+  tenantList.innerHTML = "";
+
+  if (!data || data.length === 0) {
+    tenantList.innerHTML = "<p>No tenants found.</p>";
+    return;
+  }
+
+  data
+    .filter(t =>
+      (t.name || "").toLowerCase().includes(search) ||
+      (t.phone || "").toLowerCase().includes(search)
+    )
+    .sort((a, b) => {
+      const rank = { red: 0, yellow: 1, green: 2 };
+      return rank[expiryClass(a.end_date)] - rank[expiryClass(b.end_date)];
+    })
+    .forEach(t => {
+      const card = document.createElement("div");
+      card.className = `card ${expiryClass(t.end_date)}`;
+      card.innerHTML = `
+        <b>${safe(t.name)}</b><br>
+        <strong>Phone:</strong> ${safe(t.phone)}<br>
+        <strong>Address:</strong> ${safe(t.address) || "—"}<br>
+        <strong>Description:</strong> ${safe(t.description) || "—"}<br><br>
+        <strong>Rent:</strong> ${safe(t.start_date) || "—"} → ${safe(t.end_date) || "—"}<br>
+        <a class="whatsapp" href="https://wa.me/${(t.phone || "").replace(/\D/g,"")}" target="_blank">
+          Message on WhatsApp
+        </a><br>
+        <button class="delete-btn" data-id="${t.id}">Delete</button>
+      `;
+      tenantList.appendChild(card);
+    });
+
+  // Attach delete listeners
+  tenantList.querySelectorAll(".delete-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("data-id");
+      deleteTenant(id);
+    });
+  });
+}
+
+tenantSearch.oninput = loadTenants;
+
+// Initial load after login
+</script>
+</body>
+</html>

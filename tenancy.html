@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tenant Form | Lahmee Nigeria Limited</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+body { font-family: Arial, sans-serif; background:#f4f4f4; margin:0; }
+header { background:#000; color:#fff; padding:20px; }
+nav a { color:#fff; margin-right:15px; text-decoration:none; font-weight:bold; }
+.container { max-width:900px; margin:30px auto; background:#fff; padding:30px; }
+label { display:block; margin-top:12px; font-weight:bold; }
+input, select { width:100%; padding:8px; margin-top:5px; }
+button {
+  margin-top:25px;
+  width:100%;
+  padding:15px;
+  background:#000;
+  color:#fff;
+  border:none;
+  font-size:16px;
+  cursor:pointer;
+}
+h3 { margin-top:30px; }
+</style>
+</head>
+
+<body>
+
+<header>
+  <h2>LAHMEE NIGERIA LIMITED</h2>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="properties.html">Properties</a>
+    <a href="tenancy.html">Tenant Form</a>
+    <a href="inquiry.html">Inquiry</a>
+  </nav>
+</header>
+
+<div class="container">
+<h2>Tenant Application Form</h2>
+
+<form id="tenantForm">
+
+<h3>Tenant Details</h3>
+
+<label>Name</label><input name="full_name" required>
+<label>Address</label><input name="address">
+<label>Telephone</label><input name="phone" required>
+<label>Age</label><input name="age">
+<label>Marital Status</label><input name="marital_status">
+<label>Occupation</label><input name="occupation">
+<label>Post Held at Work</label><input name="post_held">
+<label>Email</label><input name="email">
+<label>State of Origin</label><input name="state_of_origin">
+<label>Local Government</label><input name="local_government">
+<label>Nationality</label><input name="nationality">
+<label>Home Town Address</label><input name="hometown_address">
+<label>No / Size of Family</label><input name="family_size">
+<label>Employment Address</label><input name="employment_address">
+<label>Type of Accommodation</label><input name="property">
+<label>Salary Earner</label>
+<select name="salary_earner">
+  <option>Yes</option>
+  <option>No</option>
+</select>
+
+<h3>Guarantor Details</h3>
+
+<label>Name</label><input name="guarantor_name">
+<label>Telephone</label><input name="guarantor_phone">
+<label>Address</label><input name="guarantor_address">
+<label>State of Origin</label><input name="guarantor_state">
+<label>Local Government</label><input name="guarantor_lga">
+<label>Occupation</label><input name="guarantor_occupation">
+
+<button type="submit">Create PDF & Send to WhatsApp</button>
+</form>
+</div>
+
+<script>
+const { jsPDF } = window.jspdf;
+
+document.getElementById("tenantForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const formData = new FormData(this);
+  const pdf = new jsPDF();
+
+  let y = 15;
+  pdf.setFontSize(14);
+  pdf.text("LAHMEE NIGERIA LIMITED", 10, y);
+  y += 10;
+  pdf.setFontSize(11);
+  pdf.text("Tenant Application Form", 10, y);
+  y += 10;
+
+  formData.forEach((value, key) => {
+    pdf.text(`${key.replace(/_/g, " ").toUpperCase()}: ${value}`, 10, y);
+    y += 8;
+    if (y > 280) {
+      pdf.addPage();
+      y = 15;
+    }
+  });
+
+  const fileName = `Tenant_Form_${formData.get("full_name")}.pdf`;
+  pdf.save(fileName);
+
+  // Open WhatsApp
+  const message =
+    "Hello Lahmee Nigeria Limited,%0A%0AI have filled the tenant application form.%0APlease find the attached PDF document.%0AThank you.";
+
+  window.open(
+    "https://wa.me/2349094180952?text=" + message,
+    "_blank"
+  );
+});
+</script>
+
+</body>
+</html>
